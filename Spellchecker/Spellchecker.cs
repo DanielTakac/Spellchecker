@@ -97,6 +97,68 @@ namespace Spellchecker {
 
         }
 
+        private int GetHammingDistance(string word1, string word2) {
+
+            if (word1.Length != word2.Length) return -1;
+
+            word1 = word1.ToLower();
+            word2 = word2.ToLower();
+
+            int distance = 0;
+
+            for (int i = 0; i < word1.Length; i++) {
+
+                if (word1[i] != word2[i]) {
+
+                    distance++;
+
+                }
+
+            }
+
+            return distance;
+
+        }
+
+        public void SuggestCorrection(string word) {
+
+            if (dictionary.Contains(word)) {
+
+                Console.WriteLine("Word is already correct");
+                return;
+
+            }
+
+            Dictionary<string, int> suggestions = new Dictionary<string, int>();
+
+            for (int i = 0; i < dictionary.Length; i++) {
+
+                if (dictionary[i].Length != word.Length) continue;
+
+                if (GetHammingDistance(word, dictionary[i]) <= 4 && !suggestions.Contains(dictionary[i].ToLower())) {
+
+                    suggestions.Add(dictionary[i].ToLower());
+
+                }
+
+            }
+
+            suggestions.Sort();
+
+            Console.WriteLine("-----------------");
+
+            Console.WriteLine("Word: " + word);
+
+            for (int i = 0; i < suggestions.Count; i++) {
+
+                Console.WriteLine(suggestions[i] + " - " + GetHammingDistance(word, suggestions[i]));
+
+            }
+
+            Console.WriteLine("-----------------");
+
+        }
+
     }
 
 }
