@@ -171,50 +171,6 @@ namespace Spellchecker {
 
         }
 
-        public string Autocorrect(string text, bool printResult = false) {
-
-            if (CheckText(text)) {
-
-                if (printResult) {
-
-                    Console.WriteLine("Text is already correct...");
-
-                }
-                
-                return text;
-
-            }
-
-            string[] words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            List<string> badWords = new List<string>();
-
-            for (int i = 0; i < words.Length; i++) {
-
-                if (!CheckWord(words[i])) {
-
-                    badWords.Add(words[i]);
-
-                }
-
-            }
-
-            List<string> correctedWords = new List<string>();
-
-            foreach (string word in badWords) {
-
-                string correctedWord = SuggestCorrection(word, maxSuggestions: 1).First().Key;
-
-                correctedWords.Add(correctedWord);
-
-            }
-
-            string correctedText = string.Empty;
-
-            return correctedText;
-
-        }
-
     }
 
 }
