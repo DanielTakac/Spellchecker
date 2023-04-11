@@ -21,8 +21,6 @@ namespace Spellchecker {
 
             checker.CheckText(sentence, true);
 
-            Console.WriteLine(checker.Autocorrect(sentence));
-
             Console.ReadKey();
 
         }
