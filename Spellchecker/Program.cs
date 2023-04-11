@@ -15,13 +15,11 @@ namespace Spellchecker {
 
             var checker = new Spellchecker(dictionary);
 
-            string word = "charecter";
-
             string sentence = "This ise a sentence with charecters, like 123 amd %$#!";
 
-            checker.CheckSentence(sentence, true);
+            string text = "The qick brown fox jumps over the lazy dog. Th dog is not very happy about it. He would like to jum over the fence and chase the fox. But he's too lazy.";
 
-            checker.SuggestCorrection(word);
+            checker.CheckText(text, true);
 
             Console.ReadKey();
 

@@ -32,28 +32,18 @@ namespace Spellchecker {
         public bool CheckWord(string word) {
 
             string cleanedWord = Regex.Replace(word, "[^a-zA-Z]+", "").ToLower();
-
+            
             if (cleanedWord.Length == 0) return true;
 
-            for (int i = 0; i < dictionary.Length; i++) {
-
-                if (dictionary[i] == cleanedWord) {
-
-                    return true;
-
-                }
-
-            }
-
-            return false;
+            return dictionary.Contains(cleanedWord);
 
         }
 
-        public bool CheckSentence(string sentence, bool printResult = false) {
+        public bool CheckText(string sentence, bool printResult = false, bool printSuggestions = true) {
 
-            string[] words = sentence.Split(new char[] { });
+            string[] words = sentence.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            List<string> badWords = new List<string> { };
+            List<string> badWords = new List<string>();
 
             for (int i = 0; i < words.Length; i++) {
 
@@ -65,7 +55,7 @@ namespace Spellchecker {
 
             }
 
-            if (printResult) PrintCheckedSentence(words, badWords);
+            if (printResult) PrintCheckedSentence(words, badWords, printSuggestions);
 
             if (badWords.Count > 0) return false;
 
@@ -73,7 +63,7 @@ namespace Spellchecker {
 
         }
 
-        public void PrintCheckedSentence(string[] words, List<string> badWords) {
+        public void PrintCheckedSentence(string[] words, List<string> badWords, bool printSuggestions = true) {
 
             for (int i = 0; i < words.Length; i++) {
 
@@ -94,6 +84,16 @@ namespace Spellchecker {
             Console.ResetColor();
 
             Console.WriteLine();
+
+            if (!printSuggestions) return;
+
+            for (int i = 0; i < badWords.Count; i++) {
+
+                SuggestCorrection(badWords[i]);
+
+                Console.WriteLine();
+
+            }
 
         }
 
@@ -120,9 +120,11 @@ namespace Spellchecker {
 
         }
 
-        public void SuggestCorrection(string word) {
+        public void SuggestCorrection(string word, int maxDistance = 2, int maxSuggestions = 3) {
 
-            if (dictionary.Contains(word)) {
+            string cleanedWord = Regex.Replace(word, "[^a-zA-Z]+", "").ToLower();
+
+            if (dictionary.Contains(cleanedWord)) {
 
                 Console.WriteLine("Word is already correct");
                 return;
@@ -133,25 +135,39 @@ namespace Spellchecker {
 
             for (int i = 0; i < dictionary.Length; i++) {
 
-                if (dictionary[i].Length != word.Length) continue;
+                if (dictionary[i].Length != cleanedWord.Length) continue;
 
-                if (GetHammingDistance(word, dictionary[i]) <= 4 && !suggestions.Contains(dictionary[i].ToLower())) {
+                int distance = GetHammingDistance(cleanedWord, dictionary[i]);
 
-                    suggestions.Add(dictionary[i].ToLower());
+                if (distance <= maxDistance && !suggestions.ContainsKey(dictionary[i].ToLower())) {
+
+                    suggestions[dictionary[i].ToLower()] = distance;
 
                 }
 
             }
 
-            suggestions.Sort();
+            var sortedSuggestions = suggestions.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
 
             Console.WriteLine("-----------------");
 
-            Console.WriteLine("Word: " + word);
+            Console.WriteLine("Word: " + cleanedWord);
 
-            for (int i = 0; i < suggestions.Count; i++) {
+            int counter = 1;
 
-                Console.WriteLine(suggestions[i] + " - " + GetHammingDistance(word, suggestions[i]));
+            foreach (var suggestion in sortedSuggestions) {
+
+                if (counter > maxSuggestions) break;
+
+                Console.WriteLine(suggestion.Key + " - " + suggestion.Value);
+
+                counter++;
+
+            }
+
+            if (sortedSuggestions.Count == 0) {
+
+                Console.WriteLine("No suggestions found...");
 
             }
 
