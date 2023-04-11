@@ -19,7 +19,9 @@ namespace Spellchecker {
 
             string text = "The qick brown fox jumps over the lazy dog. Th dog is not very happy about it. He would like to jum over the fence and chase the fox. But he's too lazy.";
 
-            checker.CheckText(text, true);
+            checker.CheckText(sentence, true);
+
+            Console.WriteLine(checker.Autocorrect(sentence));
 
             Console.ReadKey();
 

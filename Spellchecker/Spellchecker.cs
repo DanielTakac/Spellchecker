@@ -39,9 +39,9 @@ namespace Spellchecker {
 
         }
 
-        public bool CheckText(string sentence, bool printResult = false, bool printSuggestions = true) {
+        public bool CheckText(string text, bool printResult = false, bool printSuggestions = true) {
 
-            string[] words = sentence.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             List<string> badWords = new List<string>();
 
@@ -55,7 +55,7 @@ namespace Spellchecker {
 
             }
 
-            if (printResult) PrintCheckedSentence(words, badWords, printSuggestions);
+            if (printResult) PrintCheckedText(words, badWords, printSuggestions);
 
             if (badWords.Count > 0) return false;
 
@@ -63,7 +63,7 @@ namespace Spellchecker {
 
         }
 
-        public void PrintCheckedSentence(string[] words, List<string> badWords, bool printSuggestions = true) {
+        public void PrintCheckedText(string[] words, List<string> badWords, bool printSuggestions = true) {
 
             for (int i = 0; i < words.Length; i++) {
 
@@ -120,14 +120,14 @@ namespace Spellchecker {
 
         }
 
-        public void SuggestCorrection(string word, int maxDistance = 2, int maxSuggestions = 3) {
+        public Dictionary<string, int> SuggestCorrection(string word, int maxDistance = 2, int maxSuggestions = 3) {
 
             string cleanedWord = Regex.Replace(word, "[^a-zA-Z]+", "").ToLower();
 
             if (dictionary.Contains(cleanedWord)) {
 
                 Console.WriteLine("Word is already correct");
-                return;
+                return new Dictionary<string, int>();
 
             }
 
@@ -147,21 +147,15 @@ namespace Spellchecker {
 
             }
 
-            var sortedSuggestions = suggestions.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            var sortedSuggestions = suggestions.OrderBy(x => x.Value).Take(maxSuggestions).ToDictionary(x => x.Key, x => x.Value);
 
             Console.WriteLine("-----------------");
 
             Console.WriteLine("Word: " + cleanedWord);
 
-            int counter = 1;
-
             foreach (var suggestion in sortedSuggestions) {
 
-                if (counter > maxSuggestions) break;
-
                 Console.WriteLine(suggestion.Key + " - " + suggestion.Value);
-
-                counter++;
 
             }
 
@@ -172,6 +166,52 @@ namespace Spellchecker {
             }
 
             Console.WriteLine("-----------------");
+
+            return sortedSuggestions;
+
+        }
+
+        public string Autocorrect(string text, bool printResult = false) {
+
+            if (CheckText(text)) {
+
+                if (printResult) {
+
+                    Console.WriteLine("Text is already correct...");
+
+                }
+                
+                return text;
+
+            }
+
+            string[] words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            List<string> badWords = new List<string>();
+
+            for (int i = 0; i < words.Length; i++) {
+
+                if (!CheckWord(words[i])) {
+
+                    badWords.Add(words[i]);
+
+                }
+
+            }
+
+            List<string> correctedWords = new List<string>();
+
+            foreach (string word in badWords) {
+
+                string correctedWord = SuggestCorrection(word, maxSuggestions: 1).First().Key;
+
+                correctedWords.Add(correctedWord);
+
+            }
+
+            string correctedText = string.Empty;
+
+            return correctedText;
 
         }
 
