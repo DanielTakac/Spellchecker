@@ -11,7 +11,7 @@ namespace Spellchecker {
 
         static void Main(string[] args) {
 
-            string[] dictionary = File.ReadAllLines(@"D:\100k.txt");    
+            string[] dictionary = File.ReadAllLines(@".\100k.txt");    
 
             var checker = new Spellchecker(dictionary);
 
