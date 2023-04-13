@@ -31,6 +31,8 @@ namespace Spellchecker {
 
         public bool CheckWord(string word) {
 
+            if (string.IsNullOrEmpty(word)) return true;
+
             string cleanedWord = Regex.Replace(word, "[^a-zA-Z]+", "").ToLower();
             
             if (cleanedWord.Length == 0) return true;
@@ -40,6 +42,8 @@ namespace Spellchecker {
         }
 
         public bool CheckText(string text, bool printResult = false, bool printSuggestions = true) {
+
+            if (string.IsNullOrEmpty(text)) return true;
 
             string[] words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -64,6 +68,8 @@ namespace Spellchecker {
         }
 
         public void PrintCheckedText(string[] words, List<string> badWords, bool printSuggestions = true) {
+
+            if (words == null) return;
 
             for (int i = 0; i < words.Length; i++) {
 
@@ -99,6 +105,8 @@ namespace Spellchecker {
 
         private int GetHammingDistance(string word1, string word2) {
 
+            if (string.IsNullOrEmpty(word1) || string.IsNullOrEmpty(word2)) return -1;
+
             if (word1.Length != word2.Length) return -1;
 
             word1 = word1.ToLower();
@@ -121,6 +129,8 @@ namespace Spellchecker {
         }
 
         public Dictionary<string, int> SuggestCorrection(string word, int maxDistance = 2, int maxSuggestions = 3) {
+
+            if (string.IsNullOrEmpty(word)) return new Dictionary<string, int>();
 
             string cleanedWord = Regex.Replace(word, "[^a-zA-Z]+", "").ToLower();
 
